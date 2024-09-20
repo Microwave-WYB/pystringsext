@@ -47,17 +47,22 @@ def parse_file(text: str, files: list[Path]) -> tuple[Path, str]:
 
 def parse_offset_info(text: str) -> tuple[OffsetInfo, str]:
     """Parse an offset info string into an OffsetInfo object"""
+
+    def get_number(text: str) -> int:
+        number_text = "".join([c for c in text if c.isdigit()])
+        return int(number_text, 16)
+
     text = text.lstrip()
     matched = expect(re.match(r"([0-9A-Fa-f<>+]+)", text), f"Invalid offset info in '{text}'")
     offset_info = OffsetInfo()
-    match matched.group():
+    match matched.group().strip():
         case s if s.startswith(">"):
             offset_info.is_continuation = True
-            offset_info.end = int(s[1:], 16)
+            offset_info.end = get_number(s[1:])
         case s if s.startswith("<"):
-            offset_info.start = int(s[1:], 16)
+            offset_info.start = get_number(s[1:])
         case s if s.endswith("+"):
-            offset_info.exact = int(s[:-1], 16)
+            offset_info.exact = get_number(s[:-1])
         case _:
             offset_info.exact = int(matched.group(), 16)
     return offset_info, text[matched.end() :]
@@ -66,7 +71,7 @@ def parse_offset_info(text: str) -> tuple[OffsetInfo, str]:
 def parse_encoding_info(text: str) -> tuple[EncodingInfo, str]:
     """Parse an encoding string into an index and encoding, return the index and remaining text"""
     text = text.lstrip()
-    matched = expect(re.match(r"\(([a-z]) (.+)\)", text), f"Invalid encoding info in '{text}'")
+    matched = expect(re.match(r"^\(([a-z]) (.+?)\)", text), f"Invalid encoding info in '{text}'")
     scanner_index = ord(matched.group(1)) - ord("a")
     encoding = EncodingName(matched.group(2))
     return EncodingInfo(scanner_index, encoding), text[matched.end() :]
