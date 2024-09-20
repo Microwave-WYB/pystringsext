@@ -1,5 +1,5 @@
 [project]
-name = "pystringsext"
+name = "stringsext"
 version = "0.1.0"
 description = "Python subprocess wrapper around the Rust `stringsext` crate."
 readme = "README.md"
