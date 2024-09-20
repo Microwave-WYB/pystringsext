@@ -1,0 +1,31 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - pyproject.toml
+      - .github/workflows/publish.yml
+  workflow_dispatch:
+
+jobs:
+  pypi-publish:
+    name: upload release to PyPI
+    runs-on: ubuntu-latest
+    # Specifying a GitHub environment is optional, but strongly encouraged
+    # environment: release
+    permissions:
+      # IMPORTANT: this permission is mandatory for trusted publishing
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Install uv
+        run: pip install uv
+      - name: Build package
+        run: uv build
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
