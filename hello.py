@@ -13,13 +13,12 @@ def extract_uuids(content: str) -> list[str]:
 
 
 def main():
-    # Build the stringsext command
     extractor = Stringsext()
     findings = (
-        extractor.encoding(EncodingName.UTF_16LE, 36)
-        .encoding(EncodingName.UTF_16BE, 36)
-        .encoding(EncodingName.UTF_8, 36)
-        .encoding(EncodingName.BIG5, 36)
+        extractor.encoding(EncodingName.UTF_16LE, chars_min=36)
+        .encoding(EncodingName.UTF_16BE, chars_min=36)
+        .encoding(EncodingName.UTF_8, chars_min=36)
+        .encoding(EncodingName.BIG5, chars_min=36)
         .unicode_block_filter(UnicodeBlockFilter.ARABIC)
         .add_file(Path("example/test.bin"))
         .run(verbose=True)
